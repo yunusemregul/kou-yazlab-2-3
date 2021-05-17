@@ -23,6 +23,13 @@ class Board:
 
                 self.cells[y][x].actions = self.calculateActionsForXY(x, y)
 
+    def getCell(self, pos):
+        x, y = pos
+        return self.cells[y][x]
+
+    def isCellABlock(self, cell):
+        return self.getCell(cell).reward < 0
+
     def calculateActionsForXY(self, x, y):
         actions = []
 
