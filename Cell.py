@@ -1,12 +1,17 @@
 import math
 import random
 
+from Action import Action
+from Constants import REWARDS
+
+
 class Cell:
-    def __init__(self, reward=0, actions=[]):
+    def __init__(self, pos, reward=REWARDS["empty"], actions=[]):
+        self.pos = pos
         self.reward = reward
         self.actions = actions
 
-    def getMaxAction(self):
+    def getMaxAction(self) -> Action:
         maxActions = []
 
         maxActionReward = -math.inf

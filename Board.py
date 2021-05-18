@@ -1,6 +1,7 @@
 from Cell import Cell
 from Action import Action
 from random import shuffle
+from Constants import REWARDS
 
 
 class Board:
@@ -14,21 +15,21 @@ class Board:
             self.cells[y] = [None] * size
 
             for x in range(size):
-                self.cells[y][x] = Cell()
+                self.cells[y][x] = Cell((x, y))
 
                 index = y * size + x
 
                 if index in blockIndexes:
-                    self.cells[y][x].reward = -10
+                    self.cells[y][x].reward = REWARDS["block"]
 
                 self.cells[y][x].actions = self.calculateActionsForXY(x, y)
 
-    def getCell(self, pos):
+    def getCell(self, pos) -> Cell:
         x, y = pos
         return self.cells[y][x]
 
-    def isCellABlock(self, cell):
-        return self.getCell(cell).reward < 0
+    def isCellABlock(self, pos):
+        return self.getCell(pos).reward < 0
 
     def calculateActionsForXY(self, x, y):
         actions = []

@@ -2,8 +2,9 @@ import pygame
 from Board import Board
 from Window import Window
 from Player import Player
+from Constants import MAPSIZE
 
-gameBoard = Board(size=25)
+gameBoard = Board(size=MAPSIZE)
 player = Player(gameBoard)
 window = Window(board=gameBoard, player=player)
 
