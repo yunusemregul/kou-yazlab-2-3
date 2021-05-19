@@ -1,16 +1,21 @@
+import time
+
 import pygame
 from Board import Board
 from Window import Window
 from Player import Player
-from Constants import MAPSIZE
+from Constants import MAPSIZE, SHOWPERSTEP
 
 gameBoard = Board(size=MAPSIZE)
 player = Player(gameBoard)
 window = Window(board=gameBoard, player=player)
 
+firstTime = True
+
 while True:
     if player.startPos and player.endPos:
-        player.move()
+        for i in range(SHOWPERSTEP):
+            player.move()
         window.draw()
 
     for event in pygame.event.get():

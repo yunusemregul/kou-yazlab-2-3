@@ -29,7 +29,7 @@ class Board:
         return self.cells[y][x]
 
     def isCellABlock(self, pos):
-        return self.getCell(pos).reward < 0
+        return self.getCell(pos).reward == REWARDS["block"]
 
     def calculateActionsForXY(self, x, y):
         actions = []

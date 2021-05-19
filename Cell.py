@@ -25,3 +25,6 @@ class Cell:
                 maxActions.append(action)
 
         return random.choice(maxActions)
+
+    def __repr__(self):
+        return "Cell{%s}" % (self.actions)

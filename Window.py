@@ -8,7 +8,7 @@ from Constants import REWARDS
 
 pygame.init()
 
-width = 1024
+width = 1280
 taskbarHeight = 50
 height = width + taskbarHeight
 
@@ -29,7 +29,7 @@ class Window:
         return int(screenpos[0] / self.cellSize), int((screenpos[1] - taskbarHeight) / self.cellSize)
 
     def getCellScreenpos(self, pos):
-        return (pos[0] * self.cellSize, taskbarHeight + pos[1] * self.cellSize)
+        return pos[0] * self.cellSize, taskbarHeight + pos[1] * self.cellSize
 
     def onClick(self, pos):
         if not self.player.startPos:
@@ -93,40 +93,64 @@ class Window:
                 text = font.render(str(cell.reward), True, (255, 255, 255))
                 # self.surface.blit(text, (start, start))
 
-                if cell.reward < 0:
+                if self.board.isCellABlock(cell.pos):
                     pygame.draw.rect(self.surface, (68, 1, 34),
+                                     (x * cellSize, taskbarHeight + y * cellSize, cellSize, cellSize))
+
+                if cell.pos in self.player.finalPath:
+                    pygame.draw.rect(self.surface, (1, 68, 34),
                                      (x * cellSize, taskbarHeight + y * cellSize, cellSize, cellSize))
 
                 maxAction = cell.getMaxAction()
 
                 if maxAction.reward != 0:
-                    pygame.draw.line(self.surface, (255, 255, 255), (start[0] + cellSize / 2, start[1] + cellSize / 2),
-                                     (start[0] + cellSize / 2 + maxAction.directionVector[0] * (cellSize / 4),
-                                      start[1] + cellSize / 2 + maxAction.directionVector[1] * (cellSize / 4)))
+                    pygame.draw.line(self.surface, (0, 255, 0), (start[0] + cellSize / 2, start[1] + cellSize / 2),
+                                     (start[0] + cellSize / 2 + maxAction.directionVector[0] * (cellSize / 3),
+                                      start[1] + cellSize / 2 + maxAction.directionVector[1] * (cellSize / 3)),
+                                     3)
+
+                if cell.pos in self.player.totalVisited:
+                    for action in cell.actions:
+                        if action.reward < 0:
+                            pygame.draw.line(self.surface, (255, 0, 0),
+                                             (start[0] + cellSize / 2, start[1] + cellSize / 2),
+                                             (start[0] + cellSize / 2 + action.directionVector[0] * (cellSize / 4),
+                                              start[1] + cellSize / 2 + action.directionVector[1] * (cellSize / 4)))
 
     def drawBoard(self):
         self.drawCells()
         self.drawGridLines()
 
     def drawPlayer(self):
-        if self.player.startPos and self.player.endPos:
+        if self.player.startPos:
             startCellX, startCellY = self.getCellScreenpos(self.player.startPos)
-            posX, posY = self.getCellScreenpos(self.player.pos)
-            endCellX, endCellY = self.getCellScreenpos(self.player.endPos)
+
             # oyuncu başlangıç
             pygame.draw.circle(self.surface, (31, 158, 137),
                                (startCellX + self.cellSize / 2, startCellY + self.cellSize / 2),
                                self.cellSize / 3)
 
+        if self.player.endPos:
+            endCellX, endCellY = self.getCellScreenpos(self.player.endPos)
+
+            # oyuncu hedef
+            pygame.draw.circle(self.surface, (55, 91, 141),
+                               (endCellX + self.cellSize / 2, endCellY + self.cellSize / 2),
+                               self.cellSize / 3)
+
+        if self.player.startPos and self.player.endPos:
+            # episode
+            font = pygame.font.SysFont(None, 32)
+            text = font.render("Episode: %d" % self.player.episode,
+                               True, (255, 255, 255))
+            self.surface.blit(text, (5, 17))
+
+            posX, posY = self.getCellScreenpos(self.player.pos)
+
             # oyuncu
             pygame.draw.circle(self.surface, (240, 229, 30),
                                (posX + self.cellSize / 2, posY + self.cellSize / 2),
                                self.cellSize / 4)
-
-            # hedef
-            pygame.draw.circle(self.surface, (55, 91, 141),
-                               (endCellX + self.cellSize / 2, endCellY + self.cellSize / 2),
-                               self.cellSize / 3)
         else:
             font = pygame.font.SysFont(None, 32)
             text = font.render("Lütfen %s konumunu seçiniz." % ("başlangıç" if not self.player.startPos else "bitiş"),
