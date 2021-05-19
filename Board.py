@@ -24,7 +24,14 @@ class Board:
 
                 self.cells[y][x].actions = self.calculateActionsForXY(x, y)
 
+        engelTxt = open("engel.txt", "w")
 
+        for y in range(size):
+            for x in range(size):
+                engelTxt.write(self.cells[y][x].toString() + "\t")
+            engelTxt.write("\n")
+
+        engelTxt.close()
 
     def getCell(self, pos) -> Cell:
         x, y = pos
