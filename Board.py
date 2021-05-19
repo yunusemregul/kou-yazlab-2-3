@@ -24,6 +24,8 @@ class Board:
 
                 self.cells[y][x].actions = self.calculateActionsForXY(x, y)
 
+
+
     def getCell(self, pos) -> Cell:
         x, y = pos
         return self.cells[y][x]

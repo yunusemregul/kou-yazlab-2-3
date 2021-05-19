@@ -3,11 +3,11 @@ import random
 
 from Cell import Cell
 from Action import Action
-from Constants import EPSILON, DISCOUNT
+from Constants import EPSILON, DISCOUNT, REWARDS, STOP_AFTER_X_EPISODES_WITH_NO_CHANGES
 
 
 class Player:
-    def __init__(self, board):
+    def __init__(self, board, plotterController):
         self.board = board
         self.startPos = None
         self.pos = None
@@ -15,12 +15,16 @@ class Player:
         self.totalVisited = set()
         self.finalPath = set()
         self.finalPathDistance = math.inf
+        self.steps = 0
         self.episode = 0
+        self.plotterController = plotterController
+        self.notChangedSinceEpisodes = 0
+        self.done = False
 
     def epsilonGreedy(self):
         cell = self.board.getCell(self.pos)
 
-        if random.random() <= EPSILON:
+        if self.finalPathDistance != math.inf and random.random() <= EPSILON:
             # print("keşif yaptım")
             return random.choice(cell.actions)
         else:
@@ -41,8 +45,22 @@ class Player:
         if self.board.isCellABlock(nextCell.pos) or self.endPos == nextCell.pos:
             # print("%s çarpıldı %d puan eklendi" % (("hedefe" if self.endPos == nextCell.pos else "duvara"),
             #                                       nextCell.reward + DISCOUNT * nextCell.getMaxAction().reward))
+
+            if self.finalPathDistance != math.inf:
+                self.notChangedSinceEpisodes += 1
+
+                if self.notChangedSinceEpisodes >= STOP_AFTER_X_EPISODES_WITH_NO_CHANGES:
+                    self.done = True
+
+            self.plotterController.sendData({
+                "step": self.steps,
+                "cost": (REWARDS["end"] if self.endPos == nextCell.pos else REWARDS["block"]),
+                "episode": self.episode,
+                "done": self.done
+            })
             self.pos = self.startPos
             self.episode += 1
+            self.steps = 0
 
             if self.endPos == nextCell.pos:
                 self.totalVisited.add(nextCell.pos)
@@ -53,13 +71,16 @@ class Player:
                 if self.finalPathDistance == math.inf:
                     self.finalPath = finalPath
                     self.finalPathDistance = distance
+                    self.notChangedSinceEpisodes = 0
                 else:
                     if distance < self.finalPathDistance:
                         self.finalPath = finalPath
                         self.finalPathDistance = distance
+                        self.notChangedSinceEpisodes = 0
 
         else:
             self.pos = nextCell.pos
+            self.steps += 1
 
     def calculateFinalPath(self):
         if self.endPos not in self.totalVisited:

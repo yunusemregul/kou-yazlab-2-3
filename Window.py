@@ -122,6 +122,12 @@ class Window:
         self.drawGridLines()
 
     def drawPlayer(self):
+        if self.player.done:
+            font = pygame.font.SysFont(None, 32)
+            text = font.render("BİTTİ",
+                               True, (0, 255, 0))
+            self.surface.blit(text, (width / 2 - 4, 17))
+
         if self.player.startPos:
             startCellX, startCellY = self.getCellScreenpos(self.player.startPos)
 

@@ -26,5 +26,8 @@ class Cell:
 
         return random.choice(maxActions)
 
+    def toString(self):
+        return "(%d, %d, %s)" % (self.pos[0], self.pos[1], "K" if self.reward == REWARDS["block"] else "B")
+
     def __repr__(self):
         return "Cell{%s}" % (self.actions)
