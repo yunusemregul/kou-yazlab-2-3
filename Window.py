@@ -8,7 +8,7 @@ from Constants import REWARDS
 
 pygame.init()
 
-width = 1280
+width = 900
 taskbarHeight = 50
 height = width + taskbarHeight
 
